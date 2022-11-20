@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>posts 서비스 만들기</title>
+</head>
+
+<body>
+  <h1>POST 목록</h1>
+  <h2>총 post 수 <%= postCounts %></h2>
+  <ul>
+    <% if(postCounts > 0){ %>
+    <% for(let i =0; i<postCounts; i++) { %>
+    <li>
+      <p>
+        Title: <%= POSTS[i].title %>
+      </p>
+      <p>
+        Content : <%= POSTS[i].content %>
+      </p>
+      <a href="#" onclick="deletePost('<%= POSTS[i].title %>');">삭제하기</a>
+    </li>
+    <% } %>
+    <% } else { %>
+    <li>
+      포스트가 없습니다!
+    </li>
+    <% } %>
+  </ul>
+  <!-- 포스트 등록 폼 -->
+  <form action="/posts" method="POST">
+    <div>
+      <label>타이틀</label>
+      <input type="text" name="title" />
+    </div>
+    <div>
+      <label>콘텐츠</label>
+      <input type="text" name="content" />
+    </div>
+    <button type="submit">post 등록</button>
+  </form>
+</body>
+<script>
+  function deletePost(post) {
+    fetch(`http://localhost:4000/posts/${post}`, {
+      method: 'delete',
+      headers: {
+        'Content-type': 'application/json'
+      },
+    }).then((res) => {
+      console.log(res);
+      location.reload();
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+</script>
+
+</html>

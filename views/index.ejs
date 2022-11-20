@@ -5,35 +5,15 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello, EJS</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <script src="/js/main.js"></script>
+  <title>실습 index페이지 만들기</title>
+
 </head>
 
 <body>
-  <h1>회원 목록</h1>
-  <h2>총 회원 수 <%= userCounts %></h2>
-  <ul>
-    <% if(userCounts > 1){ %>
-    <% for(let i =0; i<userCounts; i++) { %>
-    <li>
-      <p>
-        ID: <%= USER[i].id %>
-      </p>
-      <p>
-        이름 : <%= USER[i].name %>
-      </p>
-      <p>
-        이메일 : <%= USER[i].email %>
-      </p>
-    </li>
-    <% } %>
-    <% } else { %>
-    <li>
-      회원정보가 없습니다!
-    </li>
-    <% } %>
-  </ul>
+  <h1>Welcome to Express Dynamic Web</h1>
+  <!-- href 주소값 '/users' => localhost:4000/users -->
+  <a href="/users">유저서비스</a>
+
 </body>
 
 </html>
