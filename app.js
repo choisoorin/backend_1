@@ -13,6 +13,7 @@ const PORT = 4000;
 const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
+const boardRouter = require('./routes/board');
 
 // 서버에 대한 셋팅값 (app.  )
 app.set('view engine', 'ejs');
@@ -34,6 +35,8 @@ app.use('/', indexRouter);
 app.use('/users', userRouter);
 
 app.use('/posts', postsRouter);
+
+app.use('/board', boardRouter);
 
 // err를 받는 코드 : 서버코드의 미들웨어 가장 마지막에 작성해야함
 app.use((err, req, res, next) => {
