@@ -14,6 +14,8 @@ const indexRouter = require('./routes/index');
 const userRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
 const boardRouter = require('./routes/board');
+const dataRouter = require('./routes/data');
+const dbBoardRouter = require('./routes/dbBoard');
 
 // 서버에 대한 셋팅값 (app.  )
 app.set('view engine', 'ejs');
@@ -38,6 +40,10 @@ app.use('/posts', postsRouter);
 
 app.use('/board', boardRouter);
 
+// db
+app.use('/data', dataRouter);
+app.use('/dbBoard', dbBoardRouter);
+
 // err를 받는 코드 : 서버코드의 미들웨어 가장 마지막에 작성해야함
 app.use((err, req, res, next) => {
   // 서버사이드에서는 어떤 에러인지 알아야하므로 console.log
@@ -48,5 +54,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  -console.log(`서버는 ${PORT}번에서 실행 중입니다.`);
+  console.log(`서버는 ${PORT}번에서 실행 중입니다.`);
 });
