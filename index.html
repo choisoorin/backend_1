@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쿠키,localStorage 사용</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 1 - 쿠키사용
+  //   console.log(document.cookie);
+  //   document.cookie = "user=kdt; expires=26 Nov 2022 10:00:00 GMT; path=/";
+  //   document.cookie = "test=test; expires=27 Nov 2022 10:00:00 GMT; path=/";
+  //   console.log(document.cookie);
+
+  // 2 - localStorage getItem
+  //   window.localStorage.setItem('name', '최수린');
+  //   window.localStorage.setItem('pooh', '푸');
+  //   const name = window.localStorage.getItem('name');
+  //   console.log(name);z
+
+  // 3 - JSON 객체저장
+  //   const soorin = {
+  //     name: '최수린',
+  //     age: 28,
+  //     mbti: 'isfp'
+  //   }
+  //   const jsonObj = JSON.stringify(soorin);
+
+  //   window.localStorage.setItem('soorin', jsonObj);
+
+  //   const json = window.localStorage.getItem('soorin');
+  //   //   const obj =JSON.parse
+  //   console.log(json);
+
+  // 4 - removeItem (특정 키 삭제)
+  //   window.localStorage.setItem('soorin', '수린');
+  //   window.localStorage.setItem('pooh', '푸');
+  //   window.localStorage.removeItem('pooh');
+  //   console.log(window.localStorage);
+
+  // 5 - clear (전체삭제)
+  //   window.localStorage.clear();
+  //   console.log(window.localStorage);
+
+  // 6 - 
+  //   window.localStorage.setItem('soorin', '수린');
+  //   window.localStorage.setItem('pooh', '푸');
+  //   console.log(window.localStorage.length);
+  //   console.log(window.localStorage.key(0));
+  //   console.log(window.localStorage.key(1));
+  //   console.log(window.localStorage.key(2));
+
+  // 7 - sessionStorage
+  //   window.sessionStorage.setItem('soorin', '수린');
+
+
+  // 실습코드 !
+  window.localStorage.setItem('test1', '테스트1');
+  window.localStorage.setItem('test2', '테스트2');
+  window.localStorage.setItem('test3', '테스트3');
+
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i);
+    const value = window.localStorage.getItem(key);
+    console.log(`${i+1}번째 key는 ${key} 이고, value는 ${value}입니다!`);
+  }
+</script>
+
+</html>
