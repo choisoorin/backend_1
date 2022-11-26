@@ -6,16 +6,39 @@ const db = require('../controllers/boardController');
 
 const router = express.Router();
 
+function isLogin(req, res, next) {
+  if (req.session.login) {
+    next();
+  } else {
+    res.status(400);
+    res.send(
+      '로그인이 필요한 서비스 입니다.<br><a href="/login">로그인 페이지로 이동</a>',
+    );
+  }
+}
+
 // dbBoard 메인 페이지
 // localhost:4000/dbBoard
-router.get('/', (req, res) => {
+router.get('/', isLogin, (req, res) => {
+  //
+  // if (req.session.login) {
   db.getAllArticles((data) => {
     console.log(data);
     const ARTICLE = data;
     const articleCounts = ARTICLE.length;
 
-    res.render('dbBoard', { ARTICLE, articleCounts });
+    res.render('dbBoard', {
+      ARTICLE,
+      articleCounts,
+      userId: req.session.userId,
+    });
   });
+  // } else {
+  //   res.status(400);
+  //   res.send(
+  //     '로그인이 필요한 서비스 입니다.<br><a href="/login">로그인 페이지로 이동</a>',
+  //   );
+  // }
 });
 
 // 모든 게시글 데이터를 받아오는 라우터
@@ -26,15 +49,20 @@ router.get('/getAll', (req, res) => {
 });
 
 // 게시글 쓰기 페이지 이동
-router.get('/write', (req, res) => {
+router.get('/write', isLogin, (req, res) => {
   res.render('dbBoard_write');
 });
 
 // 게시글 추가
-router.post('/write', (req, res) => {
+router.post('/write', isLogin, (req, res) => {
   //   console.log(req.body);
   if (req.body.title && req.body.content) {
-    db.writeArticle(req.body, (data) => {
+    const newArticle = {
+      id: req.session.userId,
+      title: req.body.title,
+      content: req.body.content,
+    };
+    db.writeArticle(newArticle, (data) => {
       //   console.log(data);
       if (data.protocol41) {
         res.redirect('/dbBoard');
@@ -50,7 +78,7 @@ router.post('/write', (req, res) => {
 });
 
 // 게시글 수정 페이지로 이동
-router.get('/modify/:id', (req, res) => {
+router.get('/modify/:id', isLogin, (req, res) => {
   db.getArticle(req.params.id, (data) => {
     console.log(data);
     if (data.length > 0) {
@@ -60,7 +88,7 @@ router.get('/modify/:id', (req, res) => {
 });
 
 // 게시글 수정
-router.post('/modify/:id', (req, res) => {
+router.post('/modify/:id', isLogin, (req, res) => {
   //   console.log(req.body);
   if (req.body.title && req.body.content) {
     db.modifyArticle(req.params.id, req.body, (data) => {
@@ -78,7 +106,7 @@ router.post('/modify/:id', (req, res) => {
 });
 
 // 게시글 삭제
-router.delete('/delete/:id', (req, res) => {
+router.delete('/delete/:id', isLogin, (req, res) => {
   if (req.params.id) {
     db.deleteArticle(req.params.id, (data) => {
       console.log(data);

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tetz borad</title>
+  <title>Borad</title>
   <style>
     * {
       margin: 0;
@@ -122,12 +122,16 @@
       <div class="board_write">
         <span>현재 등록 글 : &nbsp; <%= articleCounts %></span>
         <a class="btn red" href="/dbBoard/write">글쓰기</a>
+        <a class="btn orange" href="/login/logout">로그아웃</a>
       </div>
       <div class="board_body">
         <ul class="board">
           <% if (articleCounts> 0) { %>
           <% for(let i=0; i < articleCounts; i++) { %>
           <li>
+            <div class="author">
+              작성자 : <%= ARTICLE[i].USERID %>
+            </div>
             <div class="title">
               <%= ARTICLE[i].TITLE %>
             </div>
@@ -135,8 +139,10 @@
               <%= ARTICLE[i].CONTENT %>
             </div>
             <div class="foot">
+              <% if (ARTICLE[i].USERID === userId) { %>
               <a class="btn orange" href="dbBoard/modify/<%= ARTICLE[i].ID_PK %>">수정</a>
               <a class="btn blue" href="#" onclick="deleteArticle('<%= ARTICLE[i].ID_PK %>')">삭제</a>
+              <% } %>
             </div>
           </li>
           <% } %>

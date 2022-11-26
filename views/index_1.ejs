@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>실습 index페이지 만들기</title>
+
+</head>
+
+<body>
+  <h1>Welcome to Express Dynamic Web</h1>
+  <!-- href 주소값 '/users' => localhost:4000/users -->
+  <a href="/users">유저서비스</a>
+
+  <p id="text"></p>
+
+  <a href="/cookie">쿠키 굽기</a>
+
+</body>
+<script>
+  // console.log(document.cookie);
+  // if ('' === 'true') alert(`쿠키 있어요! 쿠키의 값은 ${document.cookie} 입니다!`);
+
+  // 실습
+  // console.log('<= key %> / <= value %>')
+  // window.localStorage.setItem('<= key %>', '<= value %>')
+
+  // const pEl = document.getElementById('text');
+  // const key = localStorage.key(0);
+  // const value = localStorage.getItem(key);
+  // pEl.innerText = `key 값은 ${key} 입니다. value는 ${value} 입니다`
+
+  if ('<%= cookie %>' === 'true') alert('쿠키 있어요!');
+</script>
+
+</html>
