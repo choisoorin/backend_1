@@ -6,8 +6,9 @@ const db = require('../controllers/boardController');
 
 const router = express.Router();
 
+// 로그인 처리 함수
 function isLogin(req, res, next) {
-  if (req.session.login) {
+  if (req.session.login || req.signedCookies.user) {
     next();
   } else {
     res.status(400);
@@ -23,7 +24,7 @@ router.get('/', isLogin, (req, res) => {
   //
   // if (req.session.login) {
   db.getAllArticles((data) => {
-    console.log(data);
+    // console.log(data);
     const ARTICLE = data;
     const articleCounts = ARTICLE.length;
 
@@ -80,7 +81,7 @@ router.post('/write', isLogin, (req, res) => {
 // 게시글 수정 페이지로 이동
 router.get('/modify/:id', isLogin, (req, res) => {
   db.getArticle(req.params.id, (data) => {
-    console.log(data);
+    // console.log(data);
     if (data.length > 0) {
       res.render('dbBoard_modify', { selectedArticle: data[0] });
     }
@@ -109,7 +110,7 @@ router.post('/modify/:id', isLogin, (req, res) => {
 router.delete('/delete/:id', isLogin, (req, res) => {
   if (req.params.id) {
     db.deleteArticle(req.params.id, (data) => {
-      console.log(data);
+      // console.log(data);
       if (data.protocol41) {
         res.send('삭제 완료');
       } else {

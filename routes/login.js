@@ -12,12 +12,21 @@ router.get('/', (req, res) => {
 
 // 로그인 처리
 router.post('/', (req, res) => {
+  console.log('session', req.session.login, 'cookie', req.signedCookies.user);
   db.userCheck(req.body.id, (data) => {
-    console.log(req.body);
+    // console.log(req.body);
     if (data.length > 0) {
       if (data[0].PASSWORD === req.body.password) {
         req.session.login = true;
         req.session.userId = req.body.id;
+
+        // 쿠키 발행
+        res.cookie('user', req.body.id, {
+          maxAge: 1000 * 20,
+          httpOnly: true,
+          // signed(쿠키를 암호화해서 저장)
+          signed: true,
+        });
         res.redirect('/dbBoard');
       } else {
         res.status(400);
@@ -38,6 +47,7 @@ router.post('/', (req, res) => {
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) throw err;
+    // res.clearCookie('user');
     res.redirect('/');
   });
 });

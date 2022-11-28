@@ -8,8 +8,12 @@ const session = require('express-session');
 
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
 const app = express();
-const PORT = 4000;
+// const PORT = 4000;
+// env사용
+const PORT = process.env.PORT;
 
 // require('./routes'); index생략가능
 const indexRouter = require('./routes/index');
@@ -24,16 +28,17 @@ const loginRouter = require('./routes/login');
 // 서버에 대한 셋팅값 (app.  )
 app.set('view engine', 'ejs');
 
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieParser('soorin'));
 app.use(
   session({
-    // 옵션값 설정
+    // 세션 옵션값 설정
     secret: 'soo',
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 60,
-    },
+    // cookie: {
+    //   maxAge: 1000 * 60 * 60,
+    // },
   }),
 );
 

@@ -8,7 +8,7 @@ const db = {
   getAllArticles: (cb) => {
     connection.query('SELECT * FROM mydb.board;', (err, data) => {
       if (err) throw err;
-      console.log(data);
+      // console.log(data);
       cb(data);
     });
   },
