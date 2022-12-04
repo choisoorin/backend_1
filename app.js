@@ -13,7 +13,8 @@ require('dotenv').config();
 const app = express();
 // const PORT = 4000;
 // env사용
-const PORT = process.env.PORT;
+// const PORT = process.env.PORT;
+const { PORT } = process.env;
 
 // require('./routes'); index생략가능
 const indexRouter = require('./routes/index');

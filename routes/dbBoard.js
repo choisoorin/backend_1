@@ -8,6 +8,7 @@ const router = express.Router();
 
 // 로그인 처리 함수
 function isLogin(req, res, next) {
+  console.log('session', req.session.login, 'cookie', req.signedCookies.user);
   if (req.session.login || req.signedCookies.user) {
     next();
   } else {
@@ -20,26 +21,14 @@ function isLogin(req, res, next) {
 
 // dbBoard 메인 페이지
 // localhost:4000/dbBoard
-router.get('/', isLogin, (req, res) => {
-  //
-  // if (req.session.login) {
-  db.getAllArticles((data) => {
-    // console.log(data);
-    const ARTICLE = data;
-    const articleCounts = ARTICLE.length;
-
-    res.render('dbBoard', {
-      ARTICLE,
-      articleCounts,
-      userId: req.session.userId,
-    });
+router.get('/', isLogin, async (req, res) => {
+  const ARTICLE = await db.getAllArticles();
+  const articleCounts = ARTICLE.length;
+  res.render('dbBoard', {
+    ARTICLE,
+    articleCounts,
+    userId: req.session.userId,
   });
-  // } else {
-  //   res.status(400);
-  //   res.send(
-  //     '로그인이 필요한 서비스 입니다.<br><a href="/login">로그인 페이지로 이동</a>',
-  //   );
-  // }
 });
 
 // 모든 게시글 데이터를 받아오는 라우터
@@ -55,23 +44,21 @@ router.get('/write', isLogin, (req, res) => {
 });
 
 // 게시글 추가
-router.post('/write', isLogin, (req, res) => {
-  //   console.log(req.body);
+router.post('/write', isLogin, async (req, res) => {
   if (req.body.title && req.body.content) {
     const newArticle = {
-      id: req.session.userId,
-      title: req.body.title,
-      content: req.body.content,
+      USERID: req.session.userId,
+      TITLE: req.body.title,
+      CONTENT: req.body.content,
     };
-    db.writeArticle(newArticle, (data) => {
-      //   console.log(data);
-      if (data.protocol41) {
-        res.redirect('/dbBoard');
-      } else {
-        const err = new Error('DB에 글 추가 실패');
-        throw err;
-      }
-    });
+
+    const writeResult = await db.writeArticle(newArticle);
+    if (writeResult) {
+      res.redirect('/dbBoard');
+    } else {
+      const err = new Error('DB에 글 추가 실패');
+      throw err;
+    }
   } else {
     const err = new Error('글 제목 or 내용이 빠졌습니다');
     throw err;
@@ -79,27 +66,24 @@ router.post('/write', isLogin, (req, res) => {
 });
 
 // 게시글 수정 페이지로 이동
-router.get('/modify/:id', isLogin, (req, res) => {
-  db.getArticle(req.params.id, (data) => {
-    // console.log(data);
-    if (data.length > 0) {
-      res.render('dbBoard_modify', { selectedArticle: data[0] });
-    }
-  });
+router.get('/modify/:id', isLogin, async (req, res) => {
+  const findArticle = await db.getArticle(req.params.id);
+  console.log(findArticle);
+  if (findArticle) {
+    res.render('dbBoard_modify', { selectedArticle: findArticle });
+  }
 });
 
 // 게시글 수정
-router.post('/modify/:id', isLogin, (req, res) => {
-  //   console.log(req.body);
+router.post('/modify/:id', isLogin, async (req, res) => {
   if (req.body.title && req.body.content) {
-    db.modifyArticle(req.params.id, req.body, (data) => {
-      if (data.protocol41) {
-        res.redirect('/dbBoard');
-      } else {
-        const err = new Error('DB 글 내용 수정 실패');
-        throw err;
-      }
-    });
+    const modifyResult = await db.modifyArticle(req.params.id, req.body);
+    if (modifyResult) {
+      res.redirect('/dbBoard');
+    } else {
+      const err = new Error('DB 글 내용 수정 실패');
+      throw err;
+    }
   } else {
     const err = new Error('글 제목 or 내용이 빠졌습니다');
     throw err;
@@ -107,18 +91,16 @@ router.post('/modify/:id', isLogin, (req, res) => {
 });
 
 // 게시글 삭제
-router.delete('/delete/:id', isLogin, (req, res) => {
+router.delete('/delete/:id', isLogin, async (req, res) => {
   if (req.params.id) {
-    db.deleteArticle(req.params.id, (data) => {
-      // console.log(data);
-      if (data.protocol41) {
-        res.send('삭제 완료');
-      } else {
-        const err = new Error('글 삭제 실패');
-        err.statusCode = 404;
-        throw err;
-      }
-    });
+    const deleteResult = await db.deleteArticle(req.params.id);
+    if (deleteResult) {
+      res.send('삭제 완료');
+    } else {
+      const err = new Error('글 삭제 실패');
+      err.statusCode = 404;
+      throw err;
+    }
   } else {
     const err = new Error('ID 파라미터 값이 없습니다!');
     err.statusCode = 404;
