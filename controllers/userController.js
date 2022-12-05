@@ -1,36 +1,37 @@
 // @ts-check
-// mongoDB용 컨트롤러
+// mongoose 컨트롤러
+const connect = require('./mongooseConnect');
 
-const mongoClient = require('./mongoConnect');
+const User = require('../models/user');
+
+// db접속코드!
+connect();
 
 const db = {
-  getUsers: (cb) => {
-    connection.query('SELECT * FROM mydb.user;', (err, data) => {
-      if (err) throw err;
-      // console.log(data);
-      cb(data);
-    });
-  },
-  // 유저 중복 체크
+  // 유저 중복 체크 -> 스키마에서 unique로 중복체크 해주기 때문에 회원가입시 해당 코드 필요없음!
   userCheck: async (userId) => {
-    // mongodb에 접속!!
-    const client = await mongoClient.connect();
-    // db, collection 설정!!
-    const user = client.db('kdt4').collection('user');
-
-    const findUser = await user.findOne({ id: userId });
-    // console.log(findUser);
-    if (!findUser) return false;
-    return findUser;
+    try {
+      const findUser = await User.findOne({ id: userId });
+      console.log(findUser);
+      if (!findUser) return false;
+      return findUser;
+    } catch (err) {
+      console.error(err);
+      return { status: 'unexpected', err };
+    }
   },
-  // 회원가입
+  // 회원가입 -> try, catch문 변경 및 코드고도화
   registerUser: async (newUser) => {
-    const client = await mongoClient.connect();
-    const user = client.db('kdt4').collection('user');
-
-    const registerResult = await user.insertOne(newUser);
-    if (!registerResult.acknowledged) throw new Error('회원 등록 실패');
-    return true;
+    try {
+      const registerResult = await User.create(newUser);
+      console.log(registerResult); // 객체가들어오면 회원가입성공
+      if (!registerResult) throw new Error('회원 등록 실패');
+      return { status: 'success' };
+    } catch (err) {
+      console.error(err);
+      if (err.code === 11000) return { status: 'duplicated' };
+      return { status: 'unexpected', err };
+    }
   },
 };
 
