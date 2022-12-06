@@ -133,7 +133,7 @@
       <div class="board_header">
         <h1>Write Mode</h1>
       </div>
-      <form action="/dbBoard/modify/<%=selectedArticle._id%>" method="POST" class="board_form">
+      <form action="/dbBoard/modify/<%=selectedArticle._id%>" method="POST" class="board_form" enctype="multipart/form-data">
         <div class="form_title">
           <h3>제목</h3>
           <input type="text" name="title" value="<%= selectedArticle.TITLE %>" required />
@@ -142,6 +142,18 @@
           <h3>내용</h3>
           <textarea name="content" id="content" cols="30" rows="10" required><%= selectedArticle.CONTENT %>
           </textarea>
+        </div>
+        <div class="content">
+          <p>기존이미지</p>
+          <br>
+          <% if(selectedArticle.IMAGE !== null && selectedArticle.IMAGE !== undefined) { %>
+          <img src="/uploads/<%= selectedArticle.IMAGE %>" width="500" />
+          <% } %>
+          <!-- 이미지 업로드시 form태그에 enctype="multipart/form-data 추가 꼭!! -->
+          <div class="form_img">
+            <h3>이미지 업로드</h3>
+            <input type="file" name="img" />
+          </div>
         </div>
         <button type="submit">글 수정하기</button>
       </form>

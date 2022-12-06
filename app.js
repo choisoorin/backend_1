@@ -46,6 +46,8 @@ app.use(
 // Static 은 브라우저에서 접근이 가능한 폴더의 위치를 지정해 주는 역할
 app.use(express.static('public'));
 
+app.use('/uploads', express.static('uploads'));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 

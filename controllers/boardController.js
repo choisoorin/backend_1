@@ -1,8 +1,10 @@
 // @ts-check
 // mongoDB용 컨트롤러
 const { ObjectId } = require('mongodb');
+const {
+  collapseTextChangeRangesAcrossMultipleVersions,
+} = require('typescript');
 
-const connection = require('./dbConnect');
 const mongoClient = require('./mongoConnect');
 
 const db = {
@@ -42,17 +44,29 @@ const db = {
     return findArticle;
   },
   // 특정 ID를 가지는 게시글 수정하기
-  modifyArticle: async (id, modifyArticle) => {
-    const client = await mongoClient.connect();
-    const board = client.db('kdt4').collection('board');
+  modifyArticle: async (id, modifyArticle, img) => {
+    try {
+      const client = await mongoClient.connect();
+      const board = client.db('kdt4').collection('board');
 
-    const updateResult = await board.updateOne(
-      { _id: ObjectId(id) },
-      { $set: { TITLE: modifyArticle.title, CONTENT: modifyArticle.content } },
-    );
+      const finalModifyArticle = {
+        TITLE: modifyArticle.title,
+        CONTENT: modifyArticle.content,
+      };
+      if (img !== undefined) finalModifyArticle.IMAGE = img?.filename;
 
-    if (!updateResult.acknowledged) throw new Error('게시글 수정 실패');
-    return true;
+      const updateResult = await board.updateOne(
+        { _id: ObjectId(id) },
+        {
+          $set: finalModifyArticle,
+        },
+      );
+
+      if (!updateResult.acknowledged) throw new Error('게시글 수정 실패');
+      return true;
+    } catch (err) {
+      console.log(err);
+    }
   },
   // 특정 ID를 가지는 게시글 삭제하기
   deleteArticle: async (id) => {

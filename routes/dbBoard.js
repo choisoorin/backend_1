@@ -1,10 +1,27 @@
 // @ts-check
 
 const express = require('express');
+const multer = require('multer');
+const fs = require('fs'); //파일시스템 모듈 호출 (node.js 기본모듈)
 
 const db = require('../controllers/boardController');
 
 const router = express.Router();
+
+// multer 이미지업로드 함수
+const dir = './uploads';
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '_' + Date.now());
+  },
+});
+const limits = {
+  fileSize: 1024 * 1024 * 2, // 1024*1024 = 1MB
+};
+const upload = multer({ storage, limits });
 
 // 로그인 처리 함수
 function isLogin(req, res, next) {
@@ -43,13 +60,16 @@ router.get('/write', isLogin, (req, res) => {
   res.render('dbBoard_write');
 });
 
-// 게시글 추가
-router.post('/write', isLogin, async (req, res) => {
+if (!fs.existsSync(dir)) fs.mkdirSync(dir); // 폴더가 없으면 폴더를 만드는 코드 추가.
+// 게시글 추가 (multer 이미지업로드 함수 추가함)
+router.post('/write', isLogin, upload.single('img'), async (req, res) => {
+  // console.log(req.file); // 이미지가 올라오는지 확인
   if (req.body.title && req.body.content) {
     const newArticle = {
       USERID: req.session.userId,
       TITLE: req.body.title,
       CONTENT: req.body.content,
+      IMAGE: req.file ? req.file.filename : null,
     };
 
     const writeResult = await db.writeArticle(newArticle);
@@ -75,18 +95,27 @@ router.get('/modify/:id', isLogin, async (req, res) => {
 });
 
 // 게시글 수정
-router.post('/modify/:id', isLogin, async (req, res) => {
-  if (req.body.title && req.body.content) {
-    const modifyResult = await db.modifyArticle(req.params.id, req.body);
-    if (modifyResult) {
-      res.redirect('/dbBoard');
+router.post('/modify/:id', isLogin, upload.single('img'), async (req, res) => {
+  try {
+    if (req.body.title && req.body.content) {
+      const modifyResult = await db.modifyArticle(
+        req.params.id,
+        req.body,
+        req.file,
+      );
+      if (modifyResult) {
+        res.redirect('/dbBoard');
+      } else {
+        const err = new Error('DB 글 내용 수정 실패');
+        throw err;
+      }
     } else {
-      const err = new Error('DB 글 내용 수정 실패');
+      const err = new Error('글 제목 or 내용이 빠졌습니다');
       throw err;
     }
-  } else {
-    const err = new Error('글 제목 or 내용이 빠졌습니다');
-    throw err;
+  } catch (err) {
+    console.log(err);
+    res.send(`${err}<br><a href="/">메인페이지로 이동</a>`);
   }
 });
 

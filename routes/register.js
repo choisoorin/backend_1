@@ -14,10 +14,6 @@ router.get('/', (req, res) => {
 // 회원 가입 처리
 router.post('/', async (req, res) => {
   // 중복회원여부 체크 -> 필요없어짐(db 스키마에서 unique)
-  const testUser = {
-    idd: 'test',
-    password: 'test',
-  };
 
   const registerResult = await db.registerUser(req.body);
   if (registerResult.status === 'success') {
